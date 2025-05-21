@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Basic -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!-- Site Metas -->
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <link rel="shortcut icon" href="images/favicon.png" type="" />
+
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+
+  <!--owl slider stylesheet -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+
+  <!-- nice select  -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ==" crossorigin="anonymous" />
+
+  <!-- font awesome style -->
+  <link href="css/font-awesome.min.css" rel="stylesheet" />
+
+  <!-- BOOTSTRAP -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+  </script>
+
+  <!-- ICONS BOOTSTRAP -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+
+  <!-- Custom styles for this template -->
+  <link href="css/style.css" rel="stylesheet" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- responsive style -->
+  <link href="css/responsive.css" rel="stylesheet" />
+
+  <!-- ALPINE JS -->
+  <script src="//unpkg.com/alpinejs" defer></script>
+
+  <!-- TINYMCE ~~ Textarea Editor -->
+  <!-- TinyMCE CDN -->
+  <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+
+  <script>
+    tinymce.init({
+      selector: 'textarea#editor',
+    });
+  </script>
+<title>Dashboard</title>
+</head>
+
+<body>
+
+  <section class="d-flex h-100dvh ">
+    <!-- NAVBAR -->
+    <div class="kiri col-3 bg-grey d-flex flex-column justify-content-center position-fixed h-100">
+      <a href="homepage.html">
+        <h1 class="text-center text-putih mt-5 mb-4">Dapur Kita</h1>
+      </a>
+      <div class="p-2 mt-2 d-flex flex-column justify-content-between h-100">
+
+        <div class="tempat-nav-item d-flex flex-column gap-1">
+          <a class="text-decoration-none" href="dashboard.html">
+            <div class="d-flex justify-content-start align-items-end gap-2 item-navigation  px-3 cursor-pointer active">
+              <i class="bi bi-grid fs-3"></i>
+              <h4>Resep Saya</h4>
+            </div>
+          </a>
+          <a class="text-decoration-none" href="tambah.html">
+            <div class="d-flex justify-content-start align-items-end gap-2 item-navigation px-3 cursor-pointer">
+              <i class="bi bi-plus-lg fs-3"></i>
+              <h4>Tambah Resep</h4>
+            </div>
+          </a>
+          <a class="text-decoration-none" href="editProfile.html">
+            <div class="d-flex justify-content-start align-items-end gap-2 item-navigation px-3 cursor-pointe">
+              <i class="bi bi-person-fill fs-3"></i>
+              <h4>Edit Profile</h4>
+            </div>
+          </a>
+        </div>
+
+        <a class="text-decoration-none" href="login.html">
+          <div class="d-flex justify-content-center align-items-end gap-2 item-navigation">
+            <i class="bi bi-box-arrow-in-right fs-3 "></i>
+            <h4>Keluar</h4>
+
+          </div>
+        </a>
+        </div>
+        </div>
+        <!-- END NAVBAR -->
+        <!-- KIRI TIPUAN -->
+        <div class="kiri-tipuan col-3 h-100">
+        </div>
+        <!-- END KIRI TIPUAN -->
+        
+        <!-- KANAN -->
+        <div class=" kanan col-9 bg-putih p-2 ">
+        
+          <!-- NAVIGATION PROFILE -->
+          <!-- In your dashboard.html -->
+            <div class="profile d-flex justify-content-between align-items-center kotakv2 shadow p-3">
+              <div class="d-flex justify-content-center align-items-center">
+                <h2 class="m-0 welcome-message">Selamat Datang</h2>
+              </div>
+              <img src="" class="profilePicture" alt="Foto Profil">
+            </div>
+            <!-- MAIN -->
+            <div class="wadah kotakv3 shadow ">
+              <div class="mx-2 mt-2">
+                <h2>Resep Saya</h2>
+                <div class="garis"></div>
+              </div>
+
+              <!-- CONTAIN -->
+                <section class="food_section layout_padding d-inline-flex p-2">
+                  <div class="filters-content">
+                    <div class="row grid">
+                      <div class="col-sm-6 col-lg-12 all food ">
+                        <div class="box">
+                          <div class="img-box">
+                            <img src="images/f1.png" alt="" />
+                          </div>
+                          <div class="detail-box">
+                            <h5 class="text-center"><?= $row['judul']; ?></h5>
+                            <!-- btn -->
+                            <div class="d-flex flex-column justify-content-center align-content-center gap-2">
+                              <div class="d-flex justify-content-center px-3 pt-2 gap-2">
+                                <a href="editResep.html">
+                                  <button class="btn-manual">
+                                    <i class="bi bi-pencil-square"></i>
+                                    Edit
+                                  </button>
+                                </a>
+                                <a href="./php/hapus.php?id_resep=<?= $row['id_resep']; ?>">
+                                  <button class="btn-hapus">
+                                    <i class="bi bi-trash"></i>
+                                    Hapus
+                                  </button>
+                                </a>
+                              </div>
+                              <div class="d-flex justify-content-center px-3 gap-2">
+                                <a href="detail.html">
+                                  <button class="btn-cek">
+                                    <i class="bi bi-clipboard"></i>
+                                    Cek Resep
+                                  </button>
+                                </a>
+                              </div>
+
+                              <!-- End - btn -->
+                            </div>
+                          </div>
+
+                        </div>
+
+                      </div>
+                    </div>
+                </section>
+
+              <!-- END CONTAIN -->
+            </div>
+            <!-- END MAIN -->
+          </div>
+  </section>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Ambil data user dari localStorage jika tersedia
+    const userData = JSON.parse(localStorage.getItem('auth._user'));
+    const welcomeText = document.querySelector('.welcome-message');
+    const profilePicture = document.querySelector('.profilePicture');
+
+    // Jika ada data user
+    if (userData) {
+      // Set foto profil
+      profilePicture.src = userData.profilePicture;
+      
+      // Update teks selamat datang dengan fullName
+      if (userData.fullName) {
+        welcomeText.textContent = `Selamat Datang, ${userData.fullName}`;
+      } else {
+        // Fallback jika fullName tidak tersedia
+        welcomeText.textContent = 'Selamat Datang';
+      }
+    } else {
+      // Gunakan default jika tidak ada data user
+      //profilePicture.src = 'https://res.cloudinary.com/dxjsnyswn/image/upload/v1746530098/Recipe-App/Profile_Pictures/default.jpg';
+      welcomeText.textContent = 'Selamat Datang';
+    }
+
+    // Logout functionality
+    const logoutLink = document.querySelector('a[href="login.html"]');
+    
+    if (logoutLink) {
+      logoutLink.addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        const confirmLogout = confirm('Apakah Anda yakin ingin keluar?');
+        if (!confirmLogout) return;
+        
+        try {
+          const token = localStorage.getItem('auth._token');
+          await fetch('http://localhost:5000/api/user/logout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': token || ''
+            },
+            credentials: 'include'
+          });
+          
+          localStorage.clear();
+          window.location.href = 'login.html';
+          
+        } catch (error) {
+          console.error('Logout error:', error);
+          localStorage.clear();
+          window.location.href = 'login.html';
+        }
+      });
+    }
+  });
+</script>
+
+</body>
+
+</html>

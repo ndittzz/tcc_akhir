@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Basic -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Mobile Metas -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <!-- Site Metas -->
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link rel="shortcut icon" href="images/favicon.png" type="" />
+
+    <!-- bootstrap core css -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+
+    <!--owl slider stylesheet -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css"
+    />
+
+    <!-- nice select  -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css"
+      integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ=="
+      crossorigin="anonymous"
+    />
+
+    <!-- font awesome style -->
+    <link href="css/font-awesome.min.css" rel="stylesheet" />
+
+    <!-- BOOTSTRAP -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- ICONS BOOTSTRAP -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
+    />
+
+    <!-- Custom styles for this template -->
+    <link href="css/style.css" rel="stylesheet" />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- responsive style -->
+    <link href="css/responsive.css" rel="stylesheet" />
+
+    <!-- ALPINE JS -->
+    <script src="//unpkg.com/alpinejs" defer></script>
+
+    <style>
+      .alert {
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+      }
+      .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      .spinner-border {
+        width: 1rem;
+        height: 1rem;
+      }
+    </style>
+
+    <title>Logout</title>
+  </head>
+
+  <body class="bg-login h-100dvh">
+    <div class="d-flex bg-login h-100">
+      <div
+        class="kiri col-7 d-flex flex-column justify-content-center align-items-center text-light"
+      >
+        <div
+          class="d-flex flex-column justify-content-center align-items-center"
+        >
+          <h2 class="m-1">Sampai jumpa kembali di</h2>
+          <h2 class="fs-1">Dapur Kita</h2>
+        </div>
+        <p>Menjelajahi Rasa, Membagikan Kreativitas.</p>
+      </div>
+      <div
+        class="kanan col-5 d-flex flex-column justify-content-center align-items-center text-light"
+      >
+        <div class="card bg-grey p-3 text-putih w-75">
+          <h1 class="text-center mb-3">Keluar Akun</h1>
+          <div id="message" class="alert d-none"></div>
+          <div class="d-flex flex-column gap-3">
+            <p class="text-center">Apakah Anda yakin ingin keluar?</p>
+            <div class="d-flex justify-content-center gap-3">
+              <button id="confirmLogout" class="btn-manual">Ya, Keluar</button>
+              <a href="dashboard.html" class="btn btn-secondary">Batal</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const messageDiv = document.getElementById("message");
+        const logoutBtn = document.getElementById("confirmLogout");
+
+        logoutBtn.addEventListener("click", async () => {
+          messageDiv.classList.remove("d-none");
+          messageDiv.innerHTML =
+            '<div class="spinner-border spinner-border-sm me-2"></div> Sedang memproses logout...';
+
+          try {
+            // Get token from localStorage
+            const token = localStorage.getItem("auth._token");
+
+            const response = await fetch(
+              "http://localhost:5000/api/user/logout",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: token || "",
+                },
+                credentials: "include",
+              }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(data.message || "Logout gagal");
+            }
+
+            // Clear client-side storage
+            localStorage.removeItem("auth._token");
+            localStorage.removeItem("auth._user");
+
+            // Show success message
+            messageDiv.classList.add("alert-success");
+            messageDiv.innerHTML =
+              '<i class="bi bi-check-circle me-2"></i> Logout berhasil! Mengalihkan...';
+
+            // Redirect to login page
+            setTimeout(() => {
+              window.location.href = "login.html";
+            }, 1500);
+          } catch (error) {
+            messageDiv.classList.add("alert-danger");
+            messageDiv.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i> ${
+              error.message || "Terjadi kesalahan saat logout"
+            }`;
+            console.error("Logout error:", error);
+          }
+        });
+
+        // Auto-logout if coming from forced logout
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has("force_logout")) {
+          logoutBtn.click();
+        }
+      });
+    </script>
+  </body>
+</html>
