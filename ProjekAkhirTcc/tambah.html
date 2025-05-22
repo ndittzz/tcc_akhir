@@ -147,12 +147,9 @@
           class="profile d-flex justify-content-between align-items-center kotakv2 shadow p-3"
         >
           <div class="d-flex justify-content-center align-items-center">
-            <h2 class="m-0">
-              Selamat Datang,
-              <?= $_SESSION['username'] ?>
-            </h2>
+            <h2 class="m-0 welcome-message">Selamat Datang</h2>
           </div>
-          <img src="./img/profile/65683b5ca0a91.jpeg" class="profilePicture" />
+          <img src="" class="profilePicture" id="profileHeaderImage" />
         </div>
         <!-- END NAVIGAION PROFILE -->
         <!-- MAIN -->
@@ -164,11 +161,7 @@
 
           <!-- CONTAIN -->
 
-          <form
-            action="./php/add_proses.php"
-            method="post"
-            enctype="multipart/form-data"
-          >
+          <form id="tambahResepForm" enctype="multipart/form-data">
             <div
               class="resep d-flex flex-wrap justify-content-start gap-2 mx-2"
             >
@@ -262,12 +255,146 @@
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 
     <!-- Initialize Quill editor -->
-    <script>
+    <!-- <script>
       const quill = new Quill("#editor", {
         theme: "snow",
       });
       const quilll = new Quill("#editor-2", {
         theme: "snow",
+      });
+    </script> -->
+    <script src="js/previewImg.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const token = localStorage.getItem("auth._token");
+        const userData = JSON.parse(localStorage.getItem("auth._user"));
+
+        // Display user data in header
+        if (userData) {
+          const profileImage =
+            userData.profilePicture || "./img/default-profile.jpg";
+          document.getElementById("profileHeaderImage").src = profileImage;
+          document.querySelector(
+            ".welcome-message"
+          ).textContent = `Selamat Datang, ${
+            userData.fullName || userData.username || ""
+          }`;
+        }
+
+        // Image preview when file selected
+        document
+          .getElementById("file-upload")
+          .addEventListener("change", function (e) {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = function (event) {
+                document.getElementById("imageView").src = event.target.result;
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+
+        // Initialize Quill editors
+        const quillBahan = new Quill("#editor", {
+          theme: "snow",
+          placeholder: "Tulis bahan-bahan disini...",
+        });
+        const quillCara = new Quill("#editor-2", {
+          theme: "snow",
+          placeholder: "Tulis cara pembuatan disini...",
+        });
+
+        // Submit Recipe Form
+        document
+          .getElementById("tambahResepForm")
+          .addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            if (!token) {
+              alert("Anda harus login terlebih dahulu");
+              window.location.href = "login.html";
+              return;
+            }
+
+            // Get form elements
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+
+            // Set loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML =
+              '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mengirim...';
+
+            try {
+              // Create FormData
+              const formData = new FormData();
+              const imageFile = document.getElementById("file-upload").files[0];
+
+              // Append all fields with correct names expected by backend
+              formData.append("imageUrl", imageFile);
+              formData.append(
+                "title",
+                document.querySelector('input[name="judul"]').value
+              );
+              formData.append(
+                "description",
+                document.querySelector('textarea[name="deskripsi"]').value
+              );
+              formData.append("ingredients", quillBahan.root.innerHTML);
+              formData.append("instructions", quillCara.root.innerHTML);
+
+              const response = await fetch(
+                "http://localhost:5000/api/recipes/new",
+                {
+                  method: "POST",
+                  headers: {
+                    Authorization: token,
+                    // Don't set Content-Type - let browser set it with boundary
+                  },
+                  body: formData,
+                }
+              );
+
+              const result = await response.json();
+
+              if (!response.ok) {
+                throw new Error(result.message || "Gagal menambahkan resep");
+              }
+
+              alert("Resep berhasil ditambahkan!");
+              window.location.href = "dashboard.html";
+            } catch (error) {
+              console.error("Error:", error);
+              alert(`Error: ${error.message}`);
+            } finally {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = originalBtnText;
+            }
+          });
+
+        // Logout functionality
+        const logoutLink = document.querySelector('a[href="login.html"]');
+        if (logoutLink) {
+          logoutLink.addEventListener("click", async function (e) {
+            e.preventDefault();
+            if (confirm("Apakah Anda yakin ingin keluar?")) {
+              try {
+                await fetch("http://localhost:5000/api/user/logout", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token || "",
+                  },
+                });
+              } catch (err) {
+                console.error(err);
+              }
+              localStorage.clear();
+              window.location.href = "login.html";
+            }
+          });
+        }
       });
     </script>
   </body>
