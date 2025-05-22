@@ -262,6 +262,7 @@
 
     <!-- Initialize Quill editor -->
 
+    <script src="js/utils.js"></script>
     <script src="js/previewImg.js"></script>
     <script>
       // Inisialisasi Quill editor
@@ -322,7 +323,7 @@
         try {
           // Ambil data resep dari API
           const response = await fetch(
-            `http://localhost:5000/api/recipes/${recipeId}`,
+            `${BASE_URL}/recipes/${recipeId}`,
             {
               headers: {
                 Authorization: token,
@@ -372,7 +373,7 @@
 
             try {
               const response = await fetch(
-                `http://localhost:5000/api/recipes/edit/${recipeId}`,
+                `${BASE_URL}/api/recipes/edit/${recipeId}`,
                 {
                   method: "PUT",
                   headers: {
@@ -405,7 +406,7 @@
             if (!confirmLogout) return;
 
             try {
-              await fetch("http://localhost:5000/api/user/logout", {
+              await fetch(`${BASE_URL}/user/logout`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

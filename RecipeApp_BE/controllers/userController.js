@@ -206,7 +206,7 @@ const deleteUser = async (req, res) => {
     // Hapus gambar profil dari Cloudinary jika ada DAN bukan default
     if (user.profilePicture && !user.profilePicture.endsWith("default.jpg")) {
       const publicId = user.profilePicture.split("/").pop().split(".")[0];
-      await cloudinary.uploader.destroy(`User_Profile_Pictures/${publicId}`);
+      await cloudinary.uploader.destroy(`Recipe-App/Profile_Pictures/${publicId}`);
     }
 
     // Hapus user dari database

@@ -15,14 +15,14 @@ import {
 // GET ALL RECIPES
 router.get('/all', getAllRecipes);
 
+// CREATE NEW RECIPE (with file upload)
+router.post('/new', verifyToken, upload.single('imageUrl'), createRecipe);
+
 // GET RECIPES BY USER ID
 router.get('/user/:userId', getRecipesByUser);
 
 // GET RECIPE BY ID
 router.get('/:id', getRecipeById);
-
-// CREATE NEW RECIPE (with file upload)
-router.post('/new', verifyToken, upload.single('imageUrl'), createRecipe);
 
 // UPDATE RECIPE (with file upload)
 router.put('/edit/:id', verifyToken, upload.single('imageUrl'), updateRecipe);

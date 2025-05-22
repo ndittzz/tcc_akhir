@@ -263,6 +263,8 @@
         theme: "snow",
       });
     </script> -->
+    
+    <script src="js/utils.js"></script>
     <script src="js/previewImg.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
@@ -345,7 +347,7 @@
               formData.append("instructions", quillCara.root.innerHTML);
 
               const response = await fetch(
-                "http://localhost:5000/api/recipes/new",
+                `${BASE_URL}/recipes/new`,
                 {
                   method: "POST",
                   headers: {
@@ -380,7 +382,7 @@
             e.preventDefault();
             if (confirm("Apakah Anda yakin ingin keluar?")) {
               try {
-                await fetch("http://localhost:5000/api/user/logout", {
+                await fetch(`${BASE_URL}/user/logout`, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",

@@ -168,6 +168,7 @@
       </div>
     </div>
 
+    <script src="js/utils.js"></script>
     <script>
       document
         .getElementById("registerForm")
@@ -205,7 +206,7 @@
             }
 
             const response = await fetch(
-              "http://localhost:5000/api/user/register",
+              `${BASE_URL}/user/register`,
               {
                 method: "POST",
                 headers: {
