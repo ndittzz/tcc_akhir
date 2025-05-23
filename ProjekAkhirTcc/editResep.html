@@ -357,46 +357,45 @@
         }
 
         // Handle form submission
-        document
-          .getElementById("editResepForm")
-          .addEventListener("submit", async function (e) {
-            e.preventDefault();
+            document
+      .getElementById("editResepForm")
+      .addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-            // Ambil konten dari Quill editor
-            const ingredients = quill.root.innerHTML;
-            const instructions = quill2.root.innerHTML;
+        // Ambil konten dari Quill editor
+        const ingredients = quill.root.innerHTML;
+        const instructions = quill2.root.innerHTML;
 
-            // Buat FormData
-            const formData = new FormData(this);
-            formData.append("ingredients", ingredients);
-            formData.append("instructions", instructions);
+        // Buat FormData
+        const formData = new FormData(this);
+        formData.append("bahan_bahan", ingredients); // Sesuaikan dengan nama yang diharapkan controller
+        formData.append("cara_pembuatan", instructions); // Sesuaikan dengan nama yang diharapkan controller
 
-            try {
-              const response = await fetch(
-                `${BASE_URL}/recipes/edit/${recipeId}`,
-                {
-                  method: "PUT",
-                  headers: {
-                    Authorization: token,
-                  },
-                  body: formData,
-                }
-              );
-
-              const data = await response.json();
-
-              if (response.ok) {
-                alert("Resep berhasil diperbarui!");
-                window.location.href = "dashboard.html";
-              } else {
-                throw new Error(data.message || "Gagal memperbarui resep");
-              }
-            } catch (error) {
-              console.error("Error:", error);
-              alert(error.message);
+        try {
+          const response = await fetch(
+            `${BASE_URL}/recipes/edit/${recipeId}`,
+            {
+              method: "PUT",
+              headers: {
+                Authorization: token,
+              },
+              body: formData,
             }
-          });
+          );
 
+          const data = await response.json();
+
+          if (response.ok) {
+            alert("Resep berhasil diperbarui!");
+            window.location.href = "dashboard.html";
+          } else {
+            throw new Error(data.message || "Gagal memperbarui resep");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert(error.message);
+        }
+      });
         // Logout functionality
         const logoutLink = document.querySelector('a[href="login.html"]');
         if (logoutLink) {
