@@ -160,8 +160,6 @@ input[type="file"]::file-selector-button:hover {
   height: 250px;
   background-size: cover;
   object-fit: cover;
-  border-radius: 15px;
-  border-bottom-left-radius: 40px;
 }
 
 .gambar-resep-prev {
@@ -193,7 +191,6 @@ input[type="file"]::file-selector-button:hover {
   height: 150px;
   object-fit: cover;
   border-radius: 15px;
-  border-bottom-left-radius: 40px;
   background: blue;
 }
 

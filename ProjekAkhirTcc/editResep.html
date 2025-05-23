@@ -95,7 +95,7 @@
       <div
         class="kiri col-3 bg-grey d-flex flex-column justify-content-center position-fixed h-100"
       >
-        <a href="homepage.html">
+        <a href="index.html">
           <h1 class="text-center text-putih mt-5 mb-4">Dapur Kita</h1>
         </a>
         <div class="p-2 mt-2 d-flex flex-column justify-content-between h-100">
@@ -373,7 +373,7 @@
 
             try {
               const response = await fetch(
-                `${BASE_URL}/api/recipes/edit/${recipeId}`,
+                `${BASE_URL}/recipes/edit/${recipeId}`,
                 {
                   method: "PUT",
                   headers: {

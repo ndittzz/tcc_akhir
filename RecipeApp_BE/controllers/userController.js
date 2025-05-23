@@ -115,7 +115,7 @@ const loginHandler = async (req, res) => {
           status: "success",
           message: "Login successful",
           user: safeUserData,
-          accessToken,
+          accessToken
         });
       } else {
         res.status(400).json({
@@ -233,84 +233,79 @@ const deleteUser = async (req, res) => {
 
 // EDIT USER ACCOUNT - TESTED
 const editUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const loggedInUserId = req.user.id; // Dari verifyToken middleware
+    try {
+        const { id } = req.params;
+        const loggedInUserId = req.user.id;
 
-    // Memastikan user yang ingin diupdate adalah user yang sedang login
-    if (parseInt(id) !== loggedInUserId) {
-      return res.status(403).json({
-        status: "error",
-        message: "Forbidden: You can only edit your own account",
-      });
-    }
-
-    const userToUpdate = await User.findByPk(id);
-    if (!userToUpdate) {
-      return res.status(404).json({
-        status: "error",
-        message: "User not found",
-      });
-    }
-
-    const { username, email, fullName, headline, password } = req.body;
-    const file = req.file;
-
-    let updatedFields = {};
-
-    if (username !== undefined) updatedFields.username = username;
-    if (email !== undefined) updatedFields.email = email;
-    if (fullName !== undefined) updatedFields.fullName = fullName;
-    if (headline !== undefined) updatedFields.headline = headline;
-
-    if (password) {
-      updatedFields.password = await bcrypt.hash(password, 10);
-    }
-
-    if (file) {
-      try {
-        // Delete old image from Cloudinary if exists and not default
-        if (
-          userToUpdate.profilePicture &&
-          !userToUpdate.profilePicture.endsWith("default.jpg")
-        ) {
-          const publicId = userToUpdate.profilePicture
-            .split("/")
-            .pop()
-            .split(".")[0];
-          await cloudinary.uploader.destroy(
-            `Recipe-App/Profile_Pictures/${publicId}`
-          );
+        // Verify user is editing their own account
+        if (parseInt(id) !== loggedInUserId) {
+            return res.status(403).json({
+                status: "error",
+                message: "Forbidden: You can only edit your own account",
+            });
         }
 
-        // Upload new image
-        const uploadResult = await cloudinary.uploader.upload(file.path, {
-          folder: "Recipe-App/Profile_Pictures",
-          use_filename: true,
-          unique_filename: false,
-        });
+        const userToUpdate = await User.findByPk(id);
+        if (!userToUpdate) {
+            return res.status(404).json({
+                status: "error",
+                message: "User not found",
+            });
+        }
 
-        updatedFields.profilePicture = uploadResult.secure_url;
+        const { username, email, fullName, headline, password } = req.body;
+        const file = req.file;
 
-        // Delete temp file
-        fs.unlink(file.path, (err) => {
-          if (err) {
-            console.error("❌ Failed to delete temp file:", err.message);
-          } else {
-            console.log("✅ Temp file deleted successfully.");
-          }
-        });
-      } catch (uploadError) {
-        console.error("Cloudinary upload failed:", uploadError);
-        return res.status(500).json({
-          status: "error",
-          message: "Failed to upload image to Cloudinary",
-        });
-      }
-    }
+        let updatedFields = {};
+        if (username !== undefined) updatedFields.username = username;
+        if (email !== undefined) updatedFields.email = email;
+        if (fullName !== undefined) updatedFields.fullName = fullName;
+        if (headline !== undefined) updatedFields.headline = headline;
+        
+        if (password) {
+            updatedFields.password = await bcrypt.hash(password, 10);
+        }
 
+        // Handle profile picture upload
+        if (file) {
+            try {
+                // Delete old image if exists and not default
+                if (userToUpdate.profilePicture && 
+                    !userToUpdate.profilePicture.endsWith("default.jpg")) {
+                    const publicId = userToUpdate.profilePicture
+                        .split("/")
+                        .pop()
+                        .split(".")[0];
+                    await cloudinary.uploader.destroy(
+                        `Recipe-App/Profile_Pictures/${publicId}`
+                    );
+                }
+
+                // Upload new image
+                const uploadResult = await cloudinary.uploader.upload(file.path, {
+                    folder: "Recipe-App/Profile_Pictures",
+                    use_filename: true,
+                    unique_filename: false,
+                });
+                updatedFields.profilePicture = uploadResult.secure_url;
+
+                // Delete temp file
+                fs.unlink(file.path, (err) => {
+                    if (err) console.error("❌ Failed to delete temp file:", err.message);
+                });
+            } catch (uploadError) {
+                console.error("Cloudinary upload failed:", uploadError);
+                return res.status(500).json({
+                    status: "error",
+                    message: "Failed to upload image to Cloudinary",
+                });
+            }
+        }
+
+          // Update user fields
     await userToUpdate.update(updatedFields);
 
+    // Get updated user data without sensitive information
     const updatedUser = await User.findByPk(id, {
       attributes: [
         "id",
@@ -322,17 +317,34 @@ const editUser = async (req, res) => {
       ],
     });
 
+    // Generate new refresh token
+    const userPlain = updatedUser.toJSON();
+    const { password: _, refreshToken: __, ...safeUserData } = userPlain;
+    
+    const newRefreshToken = jwt.sign(
+      safeUserData,
+      process.env.REFRESH_SECRET_KEY,
+      { expiresIn: "1d" }
+    );
+
+    // Update refresh token in database
+    await User.update(
+      { refreshToken: newRefreshToken },
+      { where: { id } }
+    );
+
     res.status(200).json({
       status: "success",
       message: "User updated successfully",
       data: updatedUser,
+      refreshToken: newRefreshToken,
     });
-  } catch (error) {
-    res.status(500).json({
-      status: "error",
-      message: error.message,
-    });
-  }
+    } catch (error) {
+        res.status(500).json({
+            status: "error",
+            message: error.message,
+        });
+    }
 };
 
 // GET USER BY ID

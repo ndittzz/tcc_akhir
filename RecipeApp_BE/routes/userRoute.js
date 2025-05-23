@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 import verifyToken from "../middlewares/verifyToken.js";
 import upload from "../middlewares/fileUpload.js";
-
+import refreshToken from "../controllers/refreshToken.js";
 import {
   postUser,
   loginHandler,
@@ -24,6 +24,9 @@ router.get("/all", getAllUsers);
 
 // USER LOGOUT
 router.post("/logout", verifyToken, logoutHandler);
+
+// ENDPOINT TOKEN REFRESH
+router.get('/refresh', refreshToken);
 
 // GET USER BY ID
 router.get("/:id", verifyToken, getUserById);

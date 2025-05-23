@@ -63,11 +63,19 @@ const createRecipe = async (req, res) => {
 const updateRecipe = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.user.id; // Dari middleware verifyToken
-        const { title, description, ingredients, instructions } = req.body;
-        const file = req.file;
+        const userId = req.user.id;
+        
+        // Untuk FormData, gunakan req.body untuk text fields
+        const { 
+            judul: title, 
+            deskripsi: description, 
+            bahan_bahan: ingredients, 
+            cara_pembuatan: instructions,
+            gambarLama: oldImage 
+        } = req.body;
 
-        // Cari resep berdasarkan ID
+        const file = req.file;
+        
         const recipe = await Recipe.findByPk(id);
         if (!recipe) {
             return res.status(404).json({
@@ -76,7 +84,6 @@ const updateRecipe = async (req, res) => {
             });
         }
 
-        // Cek apakah pengguna yang sedang login yang memiliki resep tersebut
         if (recipe.userId !== userId) {
             return res.status(403).json({
                 status: "error",
@@ -91,15 +98,12 @@ const updateRecipe = async (req, res) => {
             instructions: instructions || recipe.instructions
         };
 
-        // Handle image update
         if (file) {
-            // Hapus gambar lama dari Cloudinary jika ada
             if (recipe.imageUrl) {
                 const publicId = recipe.imageUrl.split('/').pop().split('.')[0];
                 await cloudinary.uploader.destroy(`Recipe-App/Recipe_Images/${publicId}`);
             }
 
-            // Upload gambar baru ke Cloudinary
             const uploadResult = await cloudinary.uploader.upload(file.path, {
                 folder: "Recipe-App/Recipe_Images",
                 use_filename: true,
@@ -107,19 +111,22 @@ const updateRecipe = async (req, res) => {
             });
             updatedFields.imageUrl = uploadResult.secure_url;
             
-            // Hapus file di temp
             fs.unlink(file.path, (err) => {
                 if (err) console.error("Failed to delete temp file:", err);
             });
         }
 
-        // Update resep
         await recipe.update(updatedFields);
 
         res.status(200).json({
             status: "success",
             message: "Recipe updated successfully",
-            data: await Recipe.findByPk(id)
+            data: await Recipe.findByPk(id, {
+                include: [{
+                    model: User,
+                    attributes: ['id', 'username', 'profilePicture']
+                }]
+            })
         });
 
     } catch (error) {

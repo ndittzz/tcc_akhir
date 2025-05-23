@@ -191,82 +191,90 @@
     </div>
 
     <script src="js/utils.js"></script>
-    <script>
-      document
-        .getElementById("loginForm")
-        .addEventListener("submit", async function (e) {
-          e.preventDefault();
+<script>
+  document
+    .getElementById("loginForm")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-          const messageDiv = document.getElementById("message");
-          messageDiv.classList.remove(
-            "d-none",
-            "alert-success",
-            "alert-danger"
-          );
-          messageDiv.innerHTML =
-            '<div class="spinner-border spinner-border-sm me-2"></div> Memproses login...';
-          messageDiv.classList.remove("d-none");
+      const messageDiv = document.getElementById("message");
+      messageDiv.classList.remove("d-none", "alert-success", "alert-danger");
+      messageDiv.innerHTML =
+        '<div class="spinner-border spinner-border-sm me-2"></div> Memproses login...';
+      messageDiv.classList.remove("d-none");
 
-          try {
-            const response = await fetch(
-              `${BASE_URL}/user/login`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                credentials: "include", // Untuk cookie refreshToken
-                body: JSON.stringify({
-                  email: document.getElementById("email").value,
-                  password: document.getElementById("password").value,
-                }),
-              }
-            );
-
-            const data = await response.json();
-
-            if (!response.ok) {
-              throw new Error(data.message || "Login failed");
-            }
-
-            // Success case
-            messageDiv.classList.add("alert-success");
-            messageDiv.innerHTML =
-              '<i class="bi bi-check-circle me-2"></i> Login berhasil! Mengalihkan...';
-
-            // Store access token in localStorage
-            if (data.accessToken) {
-              localStorage.setItem("auth._token", `Bearer ${data.accessToken}`);
-            }
-
-            // Store user data if available
-            if (data.user) {
-              localStorage.setItem("auth._user", JSON.stringify(data.user));
-            }
-
-            // Redirect to dashboard after 1 second
-            setTimeout(() => {
-              window.location.href = "dashboard.html";
-            }, 1000);
-          } catch (error) {
-            messageDiv.classList.add("alert-danger");
-            messageDiv.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i> ${
-              error.message || "Terjadi kesalahan saat login"
-            }`;
-            console.error("Login error:", error);
-          }
+      try {
+        const response = await fetch(`${BASE_URL}/user/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Important for cookies
+          body: JSON.stringify({
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+          }),
         });
 
-      // Check if coming from registration with token
-      window.addEventListener("DOMContentLoaded", () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has("from_registration")) {
-          const messageDiv = document.getElementById("message");
-          messageDiv.classList.remove("d-none");
-          messageDiv.classList.add("alert-success");
-          messageDiv.textContent = "Registrasi berhasil! Silakan login.";
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Login failed");
         }
-      });
-    </script>
+
+        // Success case
+        messageDiv.classList.add("alert-success");
+        messageDiv.innerHTML =
+          '<i class="bi bi-check-circle me-2"></i> Login berhasil! Mengalihkan...';
+
+        // Store access token in localStorage
+        if (data.accessToken) {
+          localStorage.setItem("auth._token", `Bearer ${data.accessToken}`);
+        }
+
+        // Store user data if available
+        if (data.user) {
+          localStorage.setItem("auth._user", JSON.stringify(data.user));
+        }
+
+        // Set refresh token in cookie if received
+        if (data.refreshToken) {
+          setRefreshTokenCookie(data.refreshToken);
+        }
+
+        // Redirect to dashboard after 1 second
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1000);
+      } catch (error) {
+        messageDiv.classList.add("alert-danger");
+        messageDiv.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i> ${
+          error.message || "Terjadi kesalahan saat login"
+        }`;
+        console.error("Login error:", error);
+      }
+    });
+
+  // Helper function to set refresh token cookie
+  function setRefreshTokenCookie(token) {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000); // 1 day
+    
+    document.cookie = `refreshToken=${token}; expires=${expires.toUTCString()}; path=/; SameSite=Lax${
+      location.protocol === 'https:' ? '; Secure' : ''
+    }`;
+  }
+
+  // Check if coming from registration with token
+  window.addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has("from_registration")) {
+      const messageDiv = document.getElementById("message");
+      messageDiv.classList.remove("d-none");
+      messageDiv.classList.add("alert-success");
+      messageDiv.textContent = "Registrasi berhasil! Silakan login.";
+    }
+  });
+</script>
   </body>
 </html>

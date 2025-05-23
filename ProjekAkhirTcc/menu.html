@@ -89,14 +89,13 @@
     </li>
   </ul>
   <div class="user_option">
-    <form class="form-inline">
-      <button class="btn my-2 my-sm-0 nav_search-btn" type="submit">
-        <i class="fa fa-search" aria-hidden="true"></i>
-      </button>
-    </form>
-    <a href="login.html" class="order_online"> Login </a>
-
-  </div>
+              <form class="form-inline">
+                <button class="btn my-2 my-sm-0 nav_search-btn" type="submit">
+                  <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+              </form>
+              <a href="login.html" class="order_online"> Login </a>
+            </div>
   </nav>
 </div>
 </header>
@@ -222,6 +221,137 @@
 <!-- Google Map -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCh39n5U-4IoWpsVGUHWdqB6puEkhRLdmI&callback=myMap"></script>
 <!-- End Google Map -->
+
+<script src="js/utils.js"></script>
+<script src="js/utils.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+    // Fungsi untuk memeriksa status login
+    async function checkLoginStatus() {
+        const token = localStorage.getItem("auth._token");
+        const userData = JSON.parse(localStorage.getItem("auth._user")) || null;
+        const userOption = document.querySelector(".user_option");
+        
+        if (token && userData) {
+            // Jika sudah login
+            userOption.innerHTML = `
+                <form class="form-inline">
+                    <button class="btn my-2 my-sm-0 nav_search-btn" type="submit">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                </form>
+                <a href="dashboard.html">
+                    <img src="${userData.profilePicture || 'img/profile/profile-dummy.png'}" 
+                         alt="Profile" 
+                         class="profile-picture-nav rounded-circle" 
+                         style="width: 40px; height: 40px; object-fit: cover;">
+                </a>
+            `;
+        } else {
+            // Jika belum login
+            userOption.innerHTML = `
+                <form class="form-inline">
+                    <button class="btn my-2 my-sm-0 nav_search-btn" type="submit">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                </form>
+                <a href="login.html" class="order_online">Login</a>
+            `;
+        }
+    }
+
+    // Fungsi untuk memuat semua resep
+    async function loadAllRecipes() {
+        try {
+            const container = document.querySelector(".food_section .row");
+            const loadingDiv = document.createElement("div");
+            loadingDiv.className = "col-12 text-center my-5";
+            loadingDiv.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+            container.innerHTML = "";
+            container.appendChild(loadingDiv);
+
+            const response = await fetch(`${BASE_URL}/recipes/all`);
+            if (!response.ok) {
+                throw new Error("Gagal memuat resep");
+            }
+
+            const data = await response.json();
+            const recipes = data.data || [];
+
+            if (recipes.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center my-5">
+                        <h4>Belum ada resep yang tersedia</h4>
+                        <p>Jadilah yang pertama membuat resep!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = "";
+            recipes.slice(0, 3).forEach(recipe => { // Hanya tampilkan 3 resep
+                const card = document.createElement("div");
+                card.className = "col-sm-6 col-lg-4 mb-4";
+                
+                let description = recipe.description || "Tidak ada deskripsi";
+                if (description.length > 100) {
+                    description = description.substring(0, 100) + "...";
+                }
+                
+                const createdAt = new Date(recipe.createdAt);
+                const formattedDate = createdAt.toLocaleDateString("id-ID", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric"
+                });
+
+                card.innerHTML = `
+                    <div class="box h-100">
+                        <div>
+                            <div class="img-box">
+                                <img src="${recipe.imageUrl || 'img/resep/default-recipe.jpg'}" 
+                                     alt="${recipe.title}" 
+                                     class="recipe-image">
+                            </div>
+                            <div class="detail-box">
+                                <h5 class="text-center">${recipe.title}</h5>
+                                <div class="truncate-line-clamp">
+                                    <p>${description}</p>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <small class="text-muted">${formattedDate}</small>
+                                    <small class="text-muted">Oleh: ${recipe.User?.username || 'Anonim'}</small>
+                                </div>
+                                <div class="btn-box">
+                                    <a href="detail.html?id=${recipe.id}" class="btn1">Lanjut Baca</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+        } catch (error) {
+            console.error("Error loading recipes:", error);
+            const container = document.querySelector(".food_section .row");
+            container.innerHTML = `
+                <div class="col-12 text-center my-5">
+                    <h4>Gagal memuat resep</h4>
+                    <p>${error.message}</p>
+                    <button class="btn btn-primary mt-3" onclick="loadAllRecipes()">Coba Lagi</button>
+                </div>
+            `;
+        }
+    }
+
+    // Jalankan fungsi-fungsi
+    await checkLoginStatus();
+    await loadAllRecipes();
+});
+
+</script>
+
 </body>
 
 </html>
