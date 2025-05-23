@@ -29,7 +29,7 @@ router.post("/logout", verifyToken, logoutHandler);
 router.get('/refresh', refreshToken);
 
 // GET USER BY ID
-router.get("/:id", verifyToken, getUserById);
+router.get("/:id", getUserById);
 
 // EDIT USER PROFILE (with optional file upload)
 router.put("/edit/:id", verifyToken, upload.single("profilePicture"), editUser);
