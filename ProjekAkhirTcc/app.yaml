@@ -1,0 +1,78 @@
+runtime: nodejs20
+service: recipe-app
+
+handlers:
+  # Route ke halaman utama login
+  - url: /
+    static_files: login.html
+    upload: login.html
+
+  # Route ke halaman register
+  - url: /register
+    static_files: register.html
+    upload: register.html
+
+  # Route ke halaman dashboard
+  - url: /dashboard
+    static_files: dashboard.html
+    upload: dashboard.html
+
+  # Route ke halaman about
+  - url: /about
+    static_files: about.html
+    upload: about.html
+
+  # Route ke halaman detail
+  - url: /detail
+    static_files: detail.html
+    upload: detail.html
+
+  # Route ke halaman editProfile
+  - url: /editProfile
+    static_files: editProfile.html
+    upload: editProfile.html
+
+  # Route ke halaman editResep
+  - url: /editResep
+    static_files: editResep.html
+    upload: editResep.html
+
+  # Route ke halaman homepage
+  - url: /homepage
+    static_files: homepage.html
+    upload: homepage.html
+
+  # Route ke halaman index
+  - url: /index
+    static_files: index.html
+    upload: index.html
+
+  # Route ke halaman logout
+  - url: /logout
+    static_files: logout.html
+    upload: logout.html
+
+  # Route ke halaman menu
+  - url: /menu
+    static_files: menu.html
+    upload: menu.html
+
+  # Route ke halaman tambah
+  - url: /tambah
+    static_files: tambah.html
+    upload: tambah.html
+
+  # Serve file JS
+  - url: /js/(.*)
+    static_files: js/\1
+    upload: js/(.*)
+
+  # Serve file CSS
+  - url: /css/(.*)
+    static_files: css/\1
+    upload: css/(.*)
+
+  # Fallback untuk file statis lainnya
+  - url: /(.*)
+    static_files: \1
+    upload: (.*)
